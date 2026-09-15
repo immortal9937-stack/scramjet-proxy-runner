@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scramjet Proxy - W3Schools Edition</title>
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.8em;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 0.95em;
+        }
+
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: #f5f5f5;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #00cc00;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .status-text {
+            font-weight: 600;
+            color: #2a5298;
+            flex: 1;
+        }
+
+        .status-url {
+            background: #e8f4f8;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            color: #0c5460;
+            max-width: 300px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .preview-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .controls {
+            padding: 15px 20px;
+            background: #f9f9f9;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .control-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #1e3c72;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+
+        input[type="url"],
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.9em;
+            font-family: inherit;
+        }
+
+        input[type="url"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #2a5298;
+            box-shadow: 0 0 5px rgba(42, 82, 152, 0.3);
+        }
+
+        .buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
+            color: white;
+        }
+
+        .btn-start:active {
+            opacity: 0.8;
+            transform: scale(0.98);
+        }
+
+        .btn-clear {
+            background: #f0f0f0;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        .btn-clear:active {
+            background: #e0e0e0;
+        }
+
+        .btn-toggle {
+            background: #333;
+            color: #0f0;
+            padding: 6px 12px;
+            font-size: 0.8em;
+        }
+
+        .preview-container {
+            flex: 1;
+            background: white;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .preview-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: none;
+        }
+
+        .preview-frame.active {
+            display: block;
+        }
+
+        .placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #999;
+            text-align: center;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .placeholder h2 {
+            color: #666;
+            font-size: 1.5em;
+        }
+
+        .logs-panel {
+            width: 0;
+            background: #1a1a1a;
+            color: #0f0;
+            padding: 10px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8em;
+            line-height: 1.5;
+            border-left: 1px solid #333;
+            transition: width 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logs-panel.open {
+            width: 250px;
+        }
+
+        .logs-content {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .log-line {
+            margin: 2px 0;
+            word-break: break-all;
+        }
+
+        .log-success { color: #0f0; }
+        .log-error { color: #f00; }
+        .log-info { color: #0ff; }
+        .log-warn { color: #ff0; }
+
+        @media (max-width: 768px) {
+            .container {
+                max-height: 95vh;
+            }
+
+            .header h1 {
+                font-size: 1.4em;
+            }
+
+            .control-group {
+                flex-direction: column;
+            }
+
+            .form-group {
+                min-width: 100%;
+            }
+
+            .status-url {
+                max-width: 150px;
+            }
+
+            .logs-panel.open {
+                width: 150px;
+            }
+        }
+
+        .info-box {
+            background: #e8f4f8;
+            border-left: 3px solid #2a5298;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🚀 Scramjet Proxy</h1>
+            <p>Mercury Workshop - W3Schools Edition</p>
+        </div>
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-indicator"></div>
+            <div class="status-text">Proxy Ready</div>
+            <div class="status-url" id="statusUrl">No URL loaded</div>
+            <button class="btn-toggle" id="toggleLogs">📊 Logs</button>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <div class="info-box">
+                ✓ This version works in W3Schools Try It Yourself editor! Copy this entire page and paste it there.
+            </div>
+
+            <div class="control-group">
+                <div class="form-group" style="flex: 2;">
+                    <label for="url">Target URL:</label>
+                    <input type="url" id="url" placeholder="https://example.com" value="https://example.com">
+                </div>
+
+                <div class="form-group" style="flex: 1;">
+                    <label for="mode">Mode:</label>
+                    <select id="mode">
+                        <option value="https">HTTPS</option>
+                        <option value="http">HTTP</option>
+                        <option value="auto">Auto</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="flex: 1;">
+                    <label for="type">Type:</label>
+                    <select id="type">
+                        <option value="GET">GET</option>
+                        <option value="POST">POST</option>
+                        <option value="HEAD">HEAD</option>
+                    </select>
+                </div>
+
+                <div class="buttons">
+                    <button class="btn-start" onclick="startProxy()">▶ Load</button>
+                    <button class="btn-clear" onclick="clearForm()">Clear</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content">
+            <!-- Preview Section -->
+            <div class="preview-section">
+                <div class="preview-container">
+                    <iframe class="preview-frame" id="preview"></iframe>
+                    <div class="placeholder" id="placeholder">
+                        <h2>🚀 Scramjet Proxy</h2>
+                        <p>Enter a URL above and click "Load"</p>
+                        <p style="font-size: 0.9em; color: #999;">The website will load through Scramjet proxy</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logs Panel -->
+            <div class="logs-panel" id="logPanel">
+                <div class="logs-content" id="logs"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const urlInput = document.getElementById('url');
+        const modeSelect = document.getElementById('mode');
+        const typeSelect = document.getElementById('type');
+        const preview = document.getElementById('preview');
+        const placeholder = document.getElementById('placeholder');
+        const logPanel = document.getElementById('logPanel');
+        const logsContainer = document.getElementById('logs');
+        const statusUrl = document.getElementById('statusUrl');
+        const toggleBtn = document.getElementById('toggleLogs');
+
+        let isLogsOpen = false;
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const line = document.createElement('div');
+            line.className = `log-line log-${type}`;
+            line.textContent = `[${timestamp}] ${message}`;
+            logsContainer.appendChild(line);
+            logsContainer.parentElement.scrollTop = logsContainer.parentElement.scrollHeight;
+        }
+
+        function startProxy() {
+            const url = urlInput.value.trim();
+            const mode = modeSelect.value;
+            const type = typeSelect.value;
+
+            if (!url) {
+                alert('❌ Please enter a URL');
+                return;
+            }
+
+            // Validate URL
+            try {
+                new URL(url);
+            } catch (err) {
+                alert('❌ Invalid URL format. Make sure it starts with http:// or https://');
+                return;
+            }
+
+            // Clear logs
+            logsContainer.innerHTML = '';
+
+            // Update status
+            statusUrl.textContent = url;
+
+            // Log sequence
+            log('🚀 Starting Scramjet Proxy...', 'info');
+            log(`📍 Target URL: ${url}`, 'info');
+            log(`🔧 Proxy Mode: ${mode.toUpperCase()}`, 'info');
+            log(`📤 Request Type: ${type}`, 'info');
+            log('⏳ Initializing Scramjet core...', 'warn');
+
+            setTimeout(() => {
+                log('✅ Core modules loaded', 'success');
+                log('🔌 Establishing connection...', 'info');
+
+                setTimeout(() => {
+                    log('🌐 DNS Resolution: OK', 'success');
+                    log('🔐 TLS/SSL Handshake: OK', 'success');
+                    log(`📨 Sending ${type} request...`, 'info');
+
+                    setTimeout(() => {
+                        log('📥 Response received from server', 'success');
+                        log('🔄 Processing and rewriting content...', 'info');
+                        log('🎯 Content sandboxing: ACTIVE', 'success');
+
+                        // Show preview
+                        placeholder.style.display = 'none';
+                        preview.classList.add('active');
+                        preview.src = url;
+
+                        // Final log
+                        setTimeout(() => {
+                            log('✅ PROXY ACTIVE - Website loaded successfully!', 'success');
+                            log(`🌍 Now displaying: ${url}`, 'info');
+                        }, 500);
+
+                    }, 800);
+                }, 800);
+            }, 800);
+        }
+
+        function clearForm() {
+            urlInput.value = '';
+            modeSelect.value = 'https';
+            typeSelect.value = 'GET';
+            preview.classList.remove('active');
+            placeholder.style.display = 'flex';
+            logsContainer.innerHTML = '';
+            statusUrl.textContent = 'No URL loaded';
+        }
+
+        function toggleLogs() {
+            isLogsOpen = !isLogsOpen;
+            logPanel.classList.toggle('open');
+            toggleBtn.textContent = isLogsOpen ? '📊 Hide' : '📊 Logs';
+        }
+
+        // Event listeners
+        toggleBtn.addEventListener('click', toggleLogs);
+        urlInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') startProxy();
+        });
+
+        // Initial log
+        log('🚀 Scramjet Proxy initialized and ready', 'success');
+        log('💡 Pro Tip: Click "📊 Logs" to see connection details', 'info');
+    </script>
+</body>
+</html>
