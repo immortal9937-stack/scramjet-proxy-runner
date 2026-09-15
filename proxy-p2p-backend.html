@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Proxy - Interesting</title>
+    <title>interesting</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { 
@@ -19,147 +19,147 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
+            justify-content: center;
+            align-items: center;
         }
 
-        .starfield {
+        canvas {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: #000;
             z-index: 0;
-            pointer-events: none;
-        }
-
-        .star {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            background: white;
-            border-radius: 50%;
-            opacity: 0.5;
         }
 
         .container {
             position: relative;
-            z-index: 1;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            width: 100%;
-        }
-
-        .top-section {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            z-index: 10;
             text-align: center;
+            width: 100%;
+            max-width: 600px;
             padding: 20px;
-            color: white;
         }
 
         .title {
-            font-size: 3.5em;
+            font-size: 4em;
             font-weight: 300;
-            letter-spacing: 2px;
-            margin-bottom: 30px;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            letter-spacing: 3px;
+            margin-bottom: 50px;
+            color: white;
+            text-shadow: 0 2px 20px rgba(0, 0, 0, 0.7);
+            animation: fadeIn 1s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .search-wrapper {
+            position: relative;
             width: 100%;
             max-width: 500px;
-            margin-bottom: 40px;
+            margin: 0 auto;
         }
 
         .search-box {
             width: 100%;
-            padding: 15px 20px;
-            border: none;
-            border-radius: 30px;
+            padding: 16px 24px;
+            border: 2px solid transparent;
+            border-radius: 50px;
             background: rgba(255, 255, 255, 0.95);
             font-size: 16px;
             outline: none;
             -webkit-appearance: none;
             appearance: none;
             font-family: inherit;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
         }
 
         .search-box:focus {
-            box-shadow: 0 4px 30px rgba(42, 82, 152, 0.4);
+            box-shadow: 0 0 0 0 rgba(42, 82, 152, 0.4),
+                        0 8px 32px rgba(42, 82, 152, 0.3);
+            border-color: #2a5298;
+            animation: pulseOutline 1.5s ease-out infinite;
+        }
+
+        @keyframes pulseOutline {
+            0% {
+                box-shadow: 0 0 0 0 rgba(42, 82, 152, 0.7),
+                            0 8px 32px rgba(42, 82, 152, 0.3);
+            }
+            100% {
+                box-shadow: 0 0 0 15px rgba(42, 82, 152, 0),
+                            0 8px 32px rgba(42, 82, 152, 0.3);
+            }
         }
 
         .search-box::placeholder {
             color: #999;
         }
 
-        .buttons-group {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 12px 30px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            -webkit-appearance: none;
-            appearance: none;
-            font-family: inherit;
-            transition: all 0.3s;
-            backdrop-filter: blur(10px);
-        }
-
-        .btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.5);
-        }
-
-        .btn:active {
-            transform: scale(0.95);
-        }
-
-        .bottom-section {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            justify-content: flex-end;
-            align-items: center;
-        }
-
-        .preview-area {
-            width: 100%;
-            max-width: 800px;
-            height: 300px;
-            background: rgba(255, 255, 255, 0.1);
+        .result-container {
+            margin-top: 30px;
+            background: rgba(255, 255, 255, 0.08);
             border-radius: 15px;
+            padding: 0;
+            max-height: 0;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            display: none;
+            transition: max-height 0.5s ease, padding 0.5s ease;
             backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .preview-area.active {
-            display: block;
+        .result-container.active {
+            max-height: 600px;
+            padding: 30px;
         }
 
-        .preview-frame {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background: white;
+        .result-content {
+            color: white;
+            font-size: 14px;
+            line-height: 1.6;
+            text-align: left;
+            max-height: 500px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .result-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .result-content::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .result-content::-webkit-scrollbar-thumb {
+            background: rgba(42, 82, 152, 0.5);
+            border-radius: 10px;
+        }
+
+        .result-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(42, 82, 152, 0.8);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         .status-text {
@@ -168,175 +168,253 @@
             margin-top: 15px;
             font-family: 'Courier New', monospace;
             text-align: center;
-            max-width: 600px;
         }
 
-        .status-text.success {
-            color: #00ff00;
-        }
-
-        .status-text.loading {
-            color: #ffff00;
-            animation: blink 1s infinite;
-        }
-
-        @keyframes blink {
-            0%, 50%, 100% { opacity: 1; }
-            25%, 75% { opacity: 0.5; }
+        .error-text {
+            color: #ff4444;
         }
 
         @media (max-width: 600px) {
             .title {
-                font-size: 2.5em;
-                margin-bottom: 20px;
+                font-size: 2.8em;
+                margin-bottom: 40px;
             }
 
-            .search-wrapper {
-                max-width: 100%;
+            .search-box {
+                padding: 14px 20px;
+                font-size: 15px;
             }
 
-            .preview-area {
-                height: 250px;
-                max-width: 100%;
-            }
-
-            .buttons-group {
-                gap: 8px;
-            }
-
-            .btn {
-                padding: 10px 20px;
-                font-size: 12px;
+            .result-container.active {
+                max-height: 400px;
+                padding: 20px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="starfield" id="starfield"></div>
+    <canvas id="starfield"></canvas>
     
     <div class="container">
-        <div class="top-section">
-            <div class="title">interesting</div>
-            
-            <div class="search-wrapper">
-                <input 
-                    type="url" 
-                    class="search-box" 
-                    id="urlInput" 
-                    placeholder="Enter website URL..."
-                    value="https://example.com"
-                >
-            </div>
-
-            <div class="buttons-group">
-                <button class="btn" onclick="loadProxy()">Load via Proxy</button>
-                <button class="btn" onclick="clearProxy()">Clear</button>
-            </div>
+        <div class="title">interesting</div>
+        
+        <div class="search-wrapper">
+            <input 
+                type="text" 
+                class="search-box" 
+                id="urlInput" 
+                placeholder="Search anything..."
+            >
         </div>
 
-        <div class="bottom-section">
-            <div class="preview-area" id="previewArea">
-                <iframe class="preview-frame" id="proxyFrame"></iframe>
-            </div>
-            <div class="status-text" id="statusText"></div>
+        <div class="result-container" id="resultContainer">
+            <div class="result-content" id="resultContent"></div>
         </div>
+
+        <div class="status-text" id="statusText"></div>
     </div>
 
     <script>
-        // Generate starfield background
-        function createStarfield() {
-            const starfield = document.getElementById('starfield');
-            const starCount = 100;
-            
-            for (let i = 0; i < starCount; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
-                star.style.opacity = Math.random() * 0.5 + 0.3;
-                star.style.width = (Math.random() * 2 + 0.5) + 'px';
-                star.style.height = star.style.width;
-                starfield.appendChild(star);
+        // ============ INTERACTIVE STARFIELD ============
+        const canvas = document.getElementById('starfield');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        class Star {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.radius = Math.random() * 1.5 + 0.5;
+                this.opacity = Math.random() * 0.5 + 0.3;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+            }
+
+            draw() {
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            update(mouseX, mouseY) {
+                // Move stars
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Wrap around edges
+                if (this.x < 0) this.x = canvas.width;
+                if (this.x > canvas.width) this.x = 0;
+                if (this.y < 0) this.y = canvas.height;
+                if (this.y > canvas.height) this.y = 0;
+
+                // Repel from cursor
+                const dx = this.x - mouseX;
+                const dy = this.y - mouseY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const repelDistance = 150;
+
+                if (distance < repelDistance) {
+                    const force = (repelDistance - distance) / repelDistance;
+                    this.vx += (dx / distance) * force * 1.5;
+                    this.vy += (dy / distance) * force * 1.5;
+                    
+                    // Create shooting star effect
+                    if (Math.random() > 0.95) {
+                        createShootingStar(this.x, this.y, this.vx, this.vy);
+                    }
+                }
+
+                // Dampen velocity
+                this.vx *= 0.98;
+                this.vy *= 0.98;
             }
         }
 
-        createStarfield();
+        class ShootingStar {
+            constructor(x, y, vx, vy) {
+                this.x = x;
+                this.y = y;
+                this.vx = vx * 3;
+                this.vy = vy * 3;
+                this.life = 1;
+                this.trailLength = 50;
+                this.trail = [];
+            }
 
+            draw() {
+                ctx.strokeStyle = `rgba(255, 255, 200, ${this.life * 0.8})`;
+                ctx.lineWidth = 2;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+
+                ctx.beginPath();
+                if (this.trail.length > 0) {
+                    ctx.moveTo(this.trail[0].x, this.trail[0].y);
+                    for (let i = 1; i < this.trail.length; i++) {
+                        ctx.lineTo(this.trail[i].x, this.trail[i].y);
+                    }
+                }
+                ctx.stroke();
+
+                ctx.fillStyle = `rgba(255, 255, 200, ${this.life})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            update() {
+                this.trail.unshift({ x: this.x, y: this.y });
+                if (this.trail.length > this.trailLength) {
+                    this.trail.pop();
+                }
+
+                this.x += this.vx;
+                this.y += this.vy;
+                this.life -= 0.02;
+
+                this.vx *= 0.99;
+                this.vy *= 0.99;
+            }
+        }
+
+        const stars = [];
+        const shootingStars = [];
+        let mouseX = canvas.width / 2;
+        let mouseY = canvas.height / 2;
+
+        function createShootingStar(x, y, vx, vy) {
+            shootingStars.push(new ShootingStar(x, y, vx, vy));
+        }
+
+        function initStars() {
+            for (let i = 0; i < 150; i++) {
+                stars.push(new Star());
+            }
+        }
+
+        function animateStars() {
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Update and draw stars
+            stars.forEach(star => {
+                star.update(mouseX, mouseY);
+                star.draw();
+            });
+
+            // Update and draw shooting stars
+            for (let i = shootingStars.length - 1; i >= 0; i--) {
+                shootingStars[i].update();
+                shootingStars[i].draw();
+                if (shootingStars[i].life <= 0) {
+                    shootingStars.splice(i, 1);
+                }
+            }
+
+            requestAnimationFrame(animateStars);
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            mouseX = e.touches[0].clientX;
+            mouseY = e.touches[0].clientY;
+        });
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        initStars();
+        animateStars();
+
+        // ============ PROXY BACKEND ============
         const urlInput = document.getElementById('urlInput');
-        const proxyFrame = document.getElementById('proxyFrame');
-        const previewArea = document.getElementById('previewArea');
+        const resultContainer = document.getElementById('resultContainer');
+        const resultContent = document.getElementById('resultContent');
         const statusText = document.getElementById('statusText');
 
         const P2P_BACKEND = 'https://cdn.jsdelivr.net/gh/Onex558/p2p-svg-1@8f93a47855d5bdb174b2231de815fbb0f91cf1e2/yoursitename-fetch-310.svg';
 
-        async function proxyURL(url) {
-            try {
-                const encodedURL = encodeURIComponent(url);
-                const proxyURL = `${P2P_BACKEND}?url=${encodedURL}`;
-                return proxyURL;
-            } catch (error) {
-                console.error('Error creating proxy URL:', error);
-                return null;
-            }
-        }
-
-        async function loadProxy() {
-            const url = urlInput.value.trim();
-
-            if (!url) {
-                statusText.textContent = '❌ Please enter a URL';
-                statusText.className = 'status-text';
-                return;
-            }
+        async function fetchViaBackend(query) {
+            resultContainer.classList.add('active');
+            resultContent.innerHTML = '<div class="loading-spinner"></div> Loading...';
+            statusText.textContent = '⏳ Fetching via p2p backend...';
 
             try {
-                new URL(url);
-            } catch {
-                statusText.textContent = '❌ Invalid URL format';
-                statusText.className = 'status-text';
-                return;
-            }
-
-            statusText.textContent = '⏳ Loading through p2p proxy...';
-            statusText.className = 'status-text loading';
-
-            try {
-                const proxiedURL = await proxyURL(url);
+                const encodedQuery = encodeURIComponent(query);
+                const response = await fetch(`${P2P_BACKEND}?q=${encodedQuery}`);
                 
-                if (proxiedURL) {
-                    previewArea.classList.add('active');
-                    proxyFrame.src = proxiedURL;
-
-                    setTimeout(() => {
-                        statusText.textContent = `✓ Proxy Active | Backend: p2p-svg | Target: ${url}`;
-                        statusText.className = 'status-text success';
-                    }, 1500);
-                } else {
-                    statusText.textContent = '❌ Failed to create proxy connection';
-                    statusText.className = 'status-text';
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
+
+                const data = await response.text();
+                resultContent.innerHTML = data || 'No results found';
+                statusText.textContent = '✓ Proxy Active | Backend: p2p-svg';
             } catch (error) {
-                statusText.textContent = `❌ Error: ${error.message}`;
-                statusText.className = 'status-text';
+                resultContent.innerHTML = `<div class="error-text">⚠ Error: ${error.message}</div><p>Make sure your query is valid and the backend is accessible.</p>`;
+                statusText.textContent = '✗ Error connecting to backend';
             }
         }
 
-        function clearProxy() {
-            urlInput.value = 'https://example.com';
-            proxyFrame.src = '';
-            previewArea.classList.remove('active');
-            statusText.textContent = '';
-            statusText.className = 'status-text';
-        }
-
-        // Enter key to load
         urlInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') loadProxy();
+            if (e.key === 'Enter') {
+                const query = urlInput.value.trim();
+                if (query) {
+                    fetchViaBackend(query);
+                }
+            }
         });
 
-        // Initial status
-        statusText.textContent = '✓ System Ready | Enter URL and click "Load via Proxy"';
-        statusText.className = 'status-text success';
+        statusText.textContent = '✓ System Ready | Enter search query';
     </script>
 </body>
 </html>
